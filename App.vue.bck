@@ -1,0 +1,220 @@
+<template>
+  <div>
+    <div class="pad-div">
+      <img id="ppp" class="round-image" src="../Zafkielj.png">
+      <div>
+        <p class="text-container">XLEX-词法自动生成器</p>
+        <!-- <p class="text-container_">Copyright © 2023 Benson</p> -->
+      </div>
+    </div>
+    <div>
+      <label class="custom-file-upload">
+        <input type="file" id="fileId" @change="handleFileUpload" />
+        Browse...
+      </label>
+      <button class="button-container" @click="uploadFile">Upload</button>
+      <button class="button-container" @click="lab1">Lab</button>
+      <button class="button-container" @click="nfa">NFA</button>
+      <button class="button-container" @click="dfa">DFA</button>
+    </div>
+    <div class="file-msg">
+      <p v-if="selectedFileName">Selected File: {{ selectedFileName }}</p>
+      <p v-else>No file selected.</p>
+    </div>
+    <div class="code_container">
+      <div class="code_item">
+        <p v-if="sourceCode">正则表达式:</p>
+        <pre v-if="sourceCode">{{ sourceCode }}</pre>
+      </div>
+      <div id="tableContainer"></div>
+      <!-- <div class="code_item">
+        <p v-if="lab1Result">Lab Results:</p>
+        <pre v-if="lab1Result">{{ lab1Result }}</pre>
+      </div> -->
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'App',
+  data() {
+    return {
+      file: null,
+      selectedFileName: '',
+      lab1Result: '',
+      sourceCode: ''
+    };
+  },
+  methods: {
+    handleFileUpload(event) {
+      this.file = event.target.files[0];
+      this.selectedFileName = this.file.name;
+    },
+    uploadFile() {
+      const formData = new FormData();
+      formData.append('file', this.file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.sourceCode = reader.result;
+        console.log(this.sourceCode);
+      };
+      reader.readAsText(this.file, 'UTF-8');
+
+      axios.post('http://localhost:8000/upload', formData)
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    lab1() {
+      axios.post('http://localhost:8000/lab1')
+        .then(response => {
+          console.log(response.data);
+          this.lab1Result = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    nfa() {
+      axios.post('http://localhost:8000/nfa')
+        .then(response => {
+          console.log(response.data);
+          this.lab1Result = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+        this.convertToTable();
+    },
+    dfa() {
+      axios.post('http://localhost:8000/dfa')
+        .then(response => {
+          console.log(response.data);
+          this.lab1Result = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+        this.convertToTable();
+    },
+    convertToTable() {
+      // var textInput = document.getElementById("textInput").value;
+      var textInput = this.lab1Result;
+      var lines = textInput.split("\n");
+      var tableHTML = "<table>";
+
+      for (var i = 0; i < lines.length; i++) {
+        var cells = lines[i].split("\t");
+        tableHTML += "<tr>";
+
+        for (var j = 0; j < cells.length; j++) {
+          tableHTML += "<td>" + cells[j] + "</td>";
+        }
+
+        tableHTML += "</tr>";
+      }
+
+      tableHTML += "</table>";
+      document.getElementById("tableContainer").innerHTML = tableHTML;
+    },
+    clear() {
+      this.file = null,
+      this.selectedFileName = '',
+      this.lab1Result = '',
+      this.sourceCode = ''
+    }
+  }
+}
+</script>
+
+<style>
+.round-image {
+  border-radius: 50%;
+}
+
+#ppp {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+#ppp > img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pad-div {
+  margin-bottom: 20px;
+}
+
+.button-container {
+  background-color:transparent;
+  border-style:none;
+  border: 4px solid red;
+  display: inline-block;
+  padding: 10px 25px;
+  cursor: pointer;
+  margin-right: 50px;
+  font-weight: bold;
+  color: white;
+  border-radius: 20px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+  border: 4px solid red;
+  display: inline-block;
+  padding: 6px 15px;
+  cursor: pointer;
+  margin-right: 50px;
+  font-weight: bold;
+  color: white;
+  border-radius: 20px;
+}
+
+.text-container {
+  font-weight: bold;
+  font-size: 200%;
+  color: grey;
+}
+
+.text-container_ {
+  color: grey;
+}
+
+.code_container {
+  margin-top: 10px;
+  display: flex;
+}
+
+.code_item {
+  color: yellow;
+  margin-right: 100px;
+  white-space: nowrap;
+}
+
+.file-msg {
+  color: darkgray;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  color: yellow;
+  border: 1px solid yellow;
+  padding: 5px;
+}
+
+</style>
