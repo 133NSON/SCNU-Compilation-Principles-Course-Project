@@ -1,6 +1,6 @@
 前端：vue3
 
-后端：C++
+后端：C++（任务一代码文件为 `backend/lab1.cpp` ，任务二代码文件为 `backend/lab2.cpp`）
 
 打包：electron
 
