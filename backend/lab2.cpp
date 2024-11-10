@@ -1,5 +1,5 @@
-// author: 张峻霖
-// description: 编译原理课程项目任务1
+// author: 133NSON
+// description: 编译原理课程项目任务2
 // date: 2024-5-1
 #include <iostream>
 #include <fstream>
